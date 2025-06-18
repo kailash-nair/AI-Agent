@@ -23,7 +23,6 @@ def transcribe_malayalam(audio_path: str) -> str:
     with torch.no_grad():
         generated_ids = asr_model.generate(
             input_features=inputs.input_features,
-            attention_mask=inputs.attention_mask,
         )
     return processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
