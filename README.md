@@ -1,11 +1,11 @@
 # AI-Agent
 
-This project extracts audio from a video, transcribes Malayalam speech using the Whisper ASR model, and translates the transcript to English using `indictrans2`.
+This project extracts audio from a video, transcribes Malayalam speech using a Wav2Vec2 ASR model, and translates the transcript to English using `indictrans2`.
 
 Dependencies:
 
 - `transformers`
-- `soundfile`
+- `torchaudio`
 - `ffmpeg` (for audio extraction)
 - `torch` with CPU support
 
