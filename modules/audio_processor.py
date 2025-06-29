@@ -2,6 +2,10 @@ import torch
 import torchaudio
 from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
 
+# Expose translation utility here for backward compatibility.
+# Some older code expects translate_malayalam_to_english in this module.
+from .translator import translate_malayalam_to_english
+
 SAMPLE_RATE = 16000
 
 # ASR model/processor
