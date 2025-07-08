@@ -1,3 +1,6 @@
+import os
+from typing import List
+
 import torch
 import torchaudio
 from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
@@ -38,3 +41,26 @@ def transcribe_malayalam(audio_path: str) -> str:
         logits = model_asr(inputs.input_values).logits
         predicted_ids = torch.argmax(logits, dim=-1)
     return processor_asr.batch_decode(predicted_ids)[0]
+
+
+def split_audio(
+    audio_path: str, output_dir: str, chunk_duration: int = 30
+) -> List[str]:
+    """Split ``audio_path`` into chunks of ``chunk_duration`` seconds.
+
+    Each chunk is saved as a separate WAV file in ``output_dir`` and the
+    list of file paths is returned.
+    """
+
+    waveform = load_audio(audio_path)
+    os.makedirs(output_dir, exist_ok=True)
+    total_samples = waveform.shape[-1]
+    chunk_samples = SAMPLE_RATE * chunk_duration
+    chunk_paths: List[str] = []
+    for i in range(0, total_samples, chunk_samples):
+        chunk = waveform[i : i + chunk_samples]
+        idx = i // chunk_samples
+        chunk_path = os.path.join(output_dir, f"chunk_{idx}.wav")
+        torchaudio.save(chunk_path, chunk.unsqueeze(0), SAMPLE_RATE)
+        chunk_paths.append(chunk_path)
+    return chunk_paths
