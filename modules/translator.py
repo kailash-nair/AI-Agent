@@ -21,5 +21,7 @@ def translate_malayalam_to_english(text_ml: str) -> str:
 
     text_with_lang = f"mal_Mlym eng_Latn {text_ml}"
     inputs = tokenizer(text_with_lang, return_tensors="pt", truncation=True, max_length=512)
+    # NOTE: ``max_length`` is the correct parameter name. ``max_lengths`` will
+    # raise a ValueError since it is not recognized by the model.
     output_ids = model.generate(**inputs, max_length=512)
     return tokenizer.decode(output_ids[0], skip_special_tokens=True)
