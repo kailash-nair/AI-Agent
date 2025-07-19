@@ -2,6 +2,7 @@ import os
 from modules.audio_extractor import extract_audio_from_video
 from modules.audio_processor import transcribe_malayalam, split_audio
 from modules.translator import translate_malayalam_to_english
+from modules.transcript_joiner import join_transcripts
 
 # ─── CONFIG ───
 VIDEO_PATH = r"C:\\Users\\HP\\Desktop\\Meeting_2.mp4"
@@ -33,6 +34,11 @@ def main():
         transcript_path = os.path.join(TRANSCRIPT_DIR, f"chunk_{idx}.txt")
         with open(transcript_path, "w", encoding="utf-8") as f:
             f.write(ml_text)
+
+    # After processing all chunks, join the individual transcripts
+    final_transcript_path = os.path.join(TRANSCRIPT_DIR, "full_transcript.txt")
+    join_transcripts(TRANSCRIPT_DIR, final_transcript_path)
+    print(f"\n📄 Combined transcript saved to {final_transcript_path}")
 
 
 
