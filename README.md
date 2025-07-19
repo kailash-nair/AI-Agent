@@ -10,4 +10,6 @@ Dependencies:
 - `torch` with CPU support
 
 Run `python main.py` after installing the dependencies. Transcripts for each
-audio chunk will be saved as text files in the `transcripts` directory.
+audio chunk will be saved as text files in the `transcripts` directory. After
+all chunks are processed, the individual transcripts are automatically joined
+into `transcripts/full_transcript.txt`.
