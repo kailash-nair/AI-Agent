@@ -1,13 +1,33 @@
 """Utility for translating Malayalam to English using IndicTrans2."""
 
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+# Models from :class:`transformers` are heavy to load and require several
+# optional dependencies. Attempting to import and initialize them when this
+# module is imported can therefore raise errors (e.g. ``ImportError`` if
+# ``transformers`` is missing) or trigger large downloads.  To make the
+# ``translate_malayalam_to_english`` function importable in lightweight
+# environments, the model is loaded lazily when first needed.
 
-tokenizer = AutoTokenizer.from_pretrained(
-    "ai4bharat/indictrans2-indic-en-1B", trust_remote_code=True
-)
-model = AutoModelForSeq2SeqLM.from_pretrained(
-    "ai4bharat/indictrans2-indic-en-1B", trust_remote_code=True
-)
+tokenizer = None
+model = None
+
+
+def _load_model() -> None:
+    """Load the IndicTrans2 model and tokenizer if not already loaded."""
+    global tokenizer, model
+    if tokenizer is None or model is None:
+        try:
+            from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+        except ImportError as exc:
+            raise ImportError(
+                "The 'transformers' package is required for translation."
+            ) from exc
+
+        tokenizer = AutoTokenizer.from_pretrained(
+            "ai4bharat/indictrans2-indic-en-1B", trust_remote_code=True
+        )
+        model = AutoModelForSeq2SeqLM.from_pretrained(
+            "ai4bharat/indictrans2-indic-en-1B", trust_remote_code=True
+        )
 
 
 def translate_malayalam_to_english(text_ml: str) -> str:
@@ -18,6 +38,8 @@ def translate_malayalam_to_english(text_ml: str) -> str:
     spaces. We prepend the codes ``mal_Mlym`` and ``eng_Latn`` before the
     actual text to form a valid input.
     """
+
+    _load_model()
 
     text_with_lang = f"mal_Mlym eng_Latn {text_ml}"
     inputs = tokenizer(text_with_lang, return_tensors="pt", truncation=True, max_length=512)
